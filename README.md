@@ -22,11 +22,15 @@ make
 make run
 
 # terminal 2
-sh test.sh test1
-sh test.sh test2
+bash test.sh test1
+bash test.sh test2
 or
 # the test will be upload HAHA
-sh godtest.sh test1
-sh godtest.sh test2
-sh godtest.sh test3
+bash godtest.sh test1
+bash godtest.sh test2
+bash godtest.sh test3
+bash godtest.sh test4
+or
+# test all cases
+make test 
 ```
