@@ -1,4 +1,6 @@
 .vscode
 *.o
 nand*
+ssd_fuse_dut
+ssd_fuse
 godtest.sh
