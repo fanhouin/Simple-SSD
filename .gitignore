@@ -1,0 +1,4 @@
+.vscode
+*.o
+nand*
+godtest.sh
