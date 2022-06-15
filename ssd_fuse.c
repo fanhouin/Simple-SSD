@@ -466,55 +466,60 @@ int gc(){
     //     printf("count = %d | idx = %d \n", min_valid_block[i].count, min_valid_block[i].idx);
     // }
 
-    min_block = min_valid_block[0].idx;
-    min = min_valid_block[0].count;
-    if(min_block == curr_pca.pca >> 16){
-        min_block = min_valid_block[1].idx;
-        min = min_valid_block[1].count;
-    }
-    free(min_valid_block);
-    min_valid_block = NULL;
-    // printf("new_block_idx = %d\n", new_block_idx);
-    printf("min_block = %d | min_count = %d\n", min_block, min);    
-    if(min >= 10){
-        curr_pca.fields.lba = 9;
-        goto GC_END;
-    } 
-
-    printf("[*] gc: new block = %d\n", curr_pca.pca >> 16);
-    
-
-    for(int page_idx = 0; page_idx < PAGE_PER_BLOCK; page_idx++){
-        int min_page_idx = min_block * PAGE_PER_BLOCK + page_idx;
-        if(P2L[min_page_idx] == INVALID_LBA) continue;
-        lba = P2L[min_page_idx];
-        tmp_buf = (char *)calloc(512, sizeof(char));
-        ssd_do_read(tmp_buf, 512, lba * 512);
-
-        if(first) {
-            pca = curr_pca.pca;
-            first = 0;
-        }
-        else
-            pca = get_next_pca();
+    for(int i = 0; i < PHYSICAL_NAND_NUM; i++){
+        min_block = min_valid_block[i].idx;
+        min = min_valid_block[i].count;
         
+        if(min_block == curr_pca.pca >> 16) 
+            continue;
+        printf("min_count = %d | space = %d\n", min, 10 - valid_count[curr_pca.pca >> 16]);
+        if(min == FREE_BLOCK || (min >= (10 - valid_count[curr_pca.pca >> 16])))
+            goto GC_END;
+
+        printf("min_block = %d | min_count = %d\n", min_block, min);    
+        if(min >= 10){
+            curr_pca.fields.lba = 9;
+            goto GC_END;
+        } 
+
+        // printf("[*] gc: new block = %d\n", curr_pca.pca >> 16);
+        
+
+        for(int page_idx = 0; page_idx < PAGE_PER_BLOCK; page_idx++){
+            if(min == 0) break;
+            int min_page_idx = min_block * PAGE_PER_BLOCK + page_idx;
+            if(P2L[min_page_idx] == INVALID_LBA) continue;
+            lba = P2L[min_page_idx];
+            tmp_buf = (char *)calloc(512, sizeof(char));
+            ssd_do_read(tmp_buf, 512, lba * 512);
+
+            if(first) {
+                pca = curr_pca.pca;
+                first = 0;
+            }
+            else
+                pca = get_next_pca();
             
-        /* do_write in new block of the idx */
-        int size = nand_write(tmp_buf, pca);
-        if(size == -EINVAL){
-            return -EINVAL;
+                
+            /* do_write in new block of the idx */
+            int size = nand_write(tmp_buf, pca);
+            if(size == -EINVAL){
+                return -EINVAL;
+                free(tmp_buf);
+            }
+
+            /* if write success, udpate L2P & P2L table & del_buf*/
+            L2P[lba] = pca; 
+            P2L[pca2idx(pca)] = lba;
+            P2L[min_page_idx] = INVALID_LBA;
+            // printf("move %d to %d\n", page_idx, pca2idx(pca));
             free(tmp_buf);
         }
-
-        /* if write success, udpate L2P & P2L table & del_buf*/
-        L2P[lba] = pca; 
-        P2L[pca2idx(pca)] = lba;
-        P2L[min_page_idx] = INVALID_LBA;
-        // printf("move %d to %d\n", page_idx, pca2idx(pca));
-        free(tmp_buf);
-    }
+     }
     free_block_number++;
     nand_erase(min_block);
+    free(min_valid_block);
+   
     
 GC_END:
     printf("=============================[gc end]=============================\n");
