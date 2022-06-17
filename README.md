@@ -11,13 +11,13 @@ reboot
 ```
 
 ### Run
-#### terminal 1
+#### Terminal 1
 ```bash
 mkdir /tmp/ssd
 make
 make run
 ```
-#### terminal 2
+#### Terminal 2
 ```bash
 # test all cases
 make test 
