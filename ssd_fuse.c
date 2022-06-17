@@ -390,6 +390,7 @@ static int ssd_do_write(const char* buf, size_t size, off_t offset)
         tmp_buf = calloc(512, sizeof(char));
 
         /* read */
+        // can change to ftl_read()
         if(lba_offset > 0 && idx == 0)
             re = ssd_do_read(tmp_buf, 512, read_offset);
         else
@@ -513,8 +514,8 @@ int gc(){
         // printf("move %d to %d\n", page_idx, pca2idx(pca));
         free(tmp_buf);
     }
-    free_block_number++;
     nand_erase(min_block);
+    free_block_number++;
     
 GC_END:
     printf("=============================[gc end]=============================\n");

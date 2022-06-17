@@ -17,3 +17,4 @@ test:
 	bash godtest.sh test2
 	bash godtest.sh test3
 	bash godtest.sh test4
+	./ta_test
