@@ -11,27 +11,35 @@ reboot
 ```
 
 ### Run
+#### terminal 1
 ```bash
-# terminal 1
 mkdir /tmp/ssd
 make
 make run
-
-# terminal 2
+```
+#### terminal 2
+```bash
+# test all cases
+make test 
+```
+or
+```bash
 # simple test
 bash test.sh test1
 bash test.sh test2
+```
 or
+```bash
 # the test will be upload HAHA
-# 13579and2468: god test
+# 13579and2468 god test
 bash godtest.sh test1
 bash godtest.sh test2
 bash godtest.sh test3
 bash godtest.sh test4
+```
 or
+```bash
 # the test will be upload HAHA
 # ta final test
 ./ta_test
-# test all cases
-make test 
 ```
