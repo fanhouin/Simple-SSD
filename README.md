@@ -30,7 +30,6 @@ bash test.sh test2
 ```
 or
 ```bash
-# the test will be upload HAHA
 # 13579and2468 god test
 bash godtest.sh test1
 bash godtest.sh test2
@@ -39,7 +38,6 @@ bash godtest.sh test4
 ```
 or
 ```bash
-# the test will be upload HAHA
 # ta final test
 ./ta_test
 ```
